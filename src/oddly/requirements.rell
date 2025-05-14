@@ -1,0 +1,27 @@
+function validate_question_length(question: text) {
+    require(
+        question.size() in range(utils.MIN_QUESTION_LENGTH, utils.MAX_QUESTION_LENGTH),
+        "Question must be between 10 and 280 characters."
+    );
+}
+
+function validate_expiration_period(expires_in_days: integer) {
+    require(
+        expires_in_days in range(utils.MIN_EXPIRATION_DAYS, utils.MAX_EXPIRATION_DAYS),
+        "Expiration period must be between 1 and 365 days."
+    );
+}
+
+function validate_bet_amount(bet_amount: integer) {
+    require(
+        bet_amount in range(utils.MIN_BET_AMOUNT, utils.MAX_BET_AMOUNT),
+        "Bet amount must be between 1 and 1000."
+    );
+}
+
+function validate_event_expiration(event: event) {
+    require(
+        event.expires_at > utils.last_known_time(),
+        "Event has expired."
+    );
+}

@@ -1,0 +1,24 @@
+operation create_event(question: text, expires_in_days: integer, bet_amount: integer) {
+    val account = auth.authenticate();
+
+    validate_question_length(question);
+    validate_expiration_period(expires_in_days);
+    validate_bet_amount(bet_amount);
+
+    val expires_at = utils.days_from_now(expires_in_days);
+    create event ( creator = account, question, expires_at, bet_amount );
+}
+
+operation moderate_event(event, event_status) {
+    admin.require_admin();
+
+    event.status = event_status;
+}
+
+operation place_bet(event, choice: choice_values) {
+    val account = auth.authenticate();
+
+    validate_event_expiration(event);
+
+    create bet ( event, account, choice );
+}

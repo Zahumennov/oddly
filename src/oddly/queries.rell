@@ -1,0 +1,7 @@
+query get_events(): list<event> {
+    return event @* { };
+}
+
+query get_bets(): list<bet> {
+    return bet @* { };
+}

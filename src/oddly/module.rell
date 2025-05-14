@@ -1,0 +1,11 @@
+module;
+
+import lib.ft4.core.accounts.{ ft4_account: account };
+import lib.ft4.core.admin;
+import lib.ft4.core.auth;
+import .utils;
+
+@extend(auth.auth_handler)
+function () = auth.add_auth_handler(
+    flags = ["T"]
+);

@@ -1,0 +1,8 @@
+@test module;
+
+import development.*;
+
+import lib.ft4.test.core.{ create_auth_descriptor, ft_auth_operation_for };
+import lib.ft4.external.accounts.{ get_account_by_id };
+
+import core_accounts: lib.ft4.core.accounts;

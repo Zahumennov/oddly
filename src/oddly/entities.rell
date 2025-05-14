@@ -1,0 +1,16 @@
+entity event {
+    creator: ft4_account;
+    question: text;
+    created_at: timestamp = utils.last_known_time();
+    mutable is_closed: boolean = false;
+    expires_at: timestamp;
+    mutable result: result_values = result_values.UNRESOLVED;
+    mutable status: event_status = event_status.PENDING;
+    bet_amount: integer;
+}
+
+entity bet {
+    key event, better: ft4_account;
+    choice: choice_values;
+    created_at: timestamp = utils.last_known_time();
+}

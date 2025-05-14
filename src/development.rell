@@ -1,0 +1,6 @@
+module;
+
+import oddly.*;
+
+import open_strategy: lib.ft4.core.accounts.strategies.open;
+import strategies: lib.ft4.external.accounts.strategies;

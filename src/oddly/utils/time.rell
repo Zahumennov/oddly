@@ -1,0 +1,5 @@
+function last_known_time() = if (op_context.exists) op_context.last_block_time else block @ {} ( @max .timestamp ) ?: 0;
+
+function days_from_now(days: integer) {
+    return last_known_time() + (days * 24 * 60 * 60 * 1000);
+}

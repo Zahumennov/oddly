@@ -1,0 +1,116 @@
+function test_create_event() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    val event = create_test_event(
+        create_event_struct(
+            user_kp = alice,
+            question = "Will CHR be $10 in a week?",
+            expires_in_days = 7,
+            bet_amount = 10
+        )
+    );
+
+    assert_equals(event.creator.id, alice.pub.hash());
+    assert_equals(event.question, "Will CHR be $10 in a week?");
+    assert_true(event.created_at > 0);
+    assert_equals(event.is_closed, false);
+    assert_true(event.expires_at > event.created_at);
+    assert_equals(event.result, result_values.UNRESOLVED);
+    assert_equals(event.status, event_status.PENDING);
+    assert_equals(event.bet_amount, 10);
+}
+
+function test_create_event_too_short_question_must_fail() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    create_test_event_must_fail(
+        create_event_must_fail_struct(
+            user_kp = alice,
+            question = "Too short",
+            expires_in_days = 7,
+            bet_amount = 10,
+            error_message = "Question must be between 10 and 280 characters."
+        )
+    );
+}
+
+function test_create_event_too_long_question_must_fail() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    val long_question = "A".repeat(300);
+
+    create_test_event_must_fail(
+        create_event_must_fail_struct(
+            user_kp = alice,
+            question = long_question,
+            expires_in_days = 7,
+            bet_amount = 10,
+            error_message = "Question must be between 10 and 280 characters."
+        )
+    );
+}
+
+function test_create_event_exceeds_max_expiration_must_fail() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    create_test_event_must_fail(
+        create_event_must_fail_struct(
+            user_kp = alice,
+            question = "Will CHR be $100?",
+            expires_in_days = 400,
+            bet_amount = 10,
+            error_message = "Expiration period must be between 1 and 365 days."
+        )
+    );
+}
+
+function test_create_event_zero_days_must_fail() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    create_test_event_must_fail(
+        create_event_must_fail_struct(
+            user_kp = alice,
+            question = "Will CHR reach $1 today?",
+            expires_in_days = 0,
+            bet_amount = 10,
+            error_message = "Expiration period must be between 1 and 365 days."
+        )
+    );
+}
+
+function test_create_event_and_moderate() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    var event = create_test_event(
+        create_event_struct(
+            user_kp = alice,
+            question = "Will CHR be $10 in a week?",
+            expires_in_days = 7,
+            bet_amount = 10
+        )
+    );
+
+    create_test_event_and_moderate(event, event_status.APPROVED);
+
+    event = get_events()[0];
+
+    assert_equals(event.status, event_status.APPROVED);
+}

@@ -1,0 +1,14 @@
+function test_account_creation() {
+    val alice = rell.test.keypairs.alice;
+
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+    rell.test.tx()
+        .op(open_strategy.ras_open(auth_descriptor))
+        .op(strategies.register_account()).sign(alice)
+        .run();
+
+    val alice_account_id = alice.pub.hash();
+    val alice_account = get_account_by_id(alice_account_id);
+
+    assert_not_null(alice_account);
+}

@@ -1,0 +1,46 @@
+function test_place_bet() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    val event = create_test_event(
+        create_event_struct(
+            user_kp = alice,
+            question = "Will CHR be $10 in a week?",
+            expires_in_days = 7,
+            bet_amount = 10
+        )
+    );
+
+    val bet = create_test_bet(alice, event, choice_values.YES);
+
+    assert_equals(bet.event, event);
+    assert_equals(bet.better.id, alice.pub.hash());
+    assert_equals(bet.choice, choice_values.YES);
+    assert_true(event.created_at > 0);
+}
+
+function test_place_bet_twice_must_fail() {
+    val alice = rell.test.keypairs.alice;
+    val auth_descriptor = create_auth_descriptor(alice.pub, ["A", "T"], null.to_gtv());
+
+    register_account(alice, auth_descriptor);
+
+    val event = create_test_event(
+        create_event_struct(
+            user_kp = alice,
+            question = "Will CHR hit $5 next month?",
+            expires_in_days = 30,
+            bet_amount = 10
+        )
+    );
+
+    create_test_bet(alice, event, choice_values.YES);
+
+    rell.test.tx()
+        .op(ft_auth_operation_for(alice.pub))
+        .op(place_bet(event, choice_values.NO))
+        .sign(alice)
+        .run_must_fail();
+}

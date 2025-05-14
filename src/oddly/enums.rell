@@ -1,0 +1,17 @@
+enum result_values {
+    YES,
+    NO,
+    UNRESOLVED,
+    VOID
+}
+
+enum event_status {
+    PENDING,
+    APPROVED,
+    REJECTED
+}
+
+enum choice_values {
+    YES,
+    NO
+}
